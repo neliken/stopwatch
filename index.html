@@ -12,10 +12,10 @@
         <h1>STOPWATCH</h1>
         <h1 id="stopwatch">00:00:00</h1>
         <div class="actions">
-            <button onClick="stopwatch.start()">Start</button> 
-            <button onClick="stopwatch.stop()">Stop</button>
-            <button onClick="stopwatch.lap()">Lap</button>
-            <button onClick="stopwatch.reset()">Reset</button>
+            <button id="start" onclick="stopwatchUIController.start()">Start</button> 
+            <button id="stop" onclick="stopwatchUIController.stop()" hidden>Stop</button>
+            <button id="lap" onclick="stopwatchUIController.lap()" hidden>Lap</button>
+            <button id="reset" onclick="stopwatchUIController.reset()">Reset</button>
         </div>
         <div id="laps">      
         </div>    

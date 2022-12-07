@@ -1,13 +1,8 @@
-class Stopwatch {
-    constructor(id, delay=100) { //Delay in ms
-      this.state = "paused";
-      this.delay = delay;
-      this.laps = [];
-      this.lapsNode = document.getElementById('laps');
-      this.display = document.getElementById(id);
-      this.value = 0;
-    }
-    
+const stateButton = {
+    paused: "paused",
+    running: "running",
+}
+class FormatTime{
     formatTime(ms) {
         var hours   = Math.floor(ms / 3600000);
         var minutes = Math.floor((ms - (hours * 3600000)) / 60000);
@@ -24,35 +19,46 @@ class Stopwatch {
         }
         return hours + ':' + minutes + ':' + seconds;
     }
+}
+
+const time = new FormatTime();
+class Stopwatch {
+    constructor(id, delay=1000) { //Delay in ms
+        this.state = stateButton.paused;
+        this.delay = delay;
+        this.laps = [];
+        this.lapsNode = document.getElementById('laps');
+        this.displayTimer = document.getElementById(id);
+        this.value = 0;
+    }
     
     update() {
-        if (this.state=="running") {
+        if (this.state==stateButton.running) {
             this.value += this.delay;
         }
-        this.display.innerHTML = this.formatTime(this.value);
+        this.displayTimer.innerHTML = time.formatTime(this.value);
     }
     
     start() {
-        if (this.state=="paused") {
-            this.state="running";
+        if (this.state==stateButton.paused) {
+            this.state=stateButton.running;
             if (!this.interval) {
-            var t=this;
-            this.interval = setInterval(function(){t.update();}, this.delay);
+                var t=this;
+                this.interval = setInterval(function(){t.update();}, this.delay);
             }
-            
         }
     }
 
     lap() {
-        if (this.state=="running") {  
-            this.laps += `<div class="lap">${this.formatTime(this.value)}</div>`;
+        if (this.state==stateButton.running) {  
+            this.laps += `<div class="lap">${time.formatTime(this.value)}</div>`;
             this.lapsNode.innerHTML = this.laps;
         }
     }
     
     stop() {
-        if (this.state=="running") {
-            this.state="paused";
+        if (this.state==stateButton.running) {
+            this.state=stateButton.paused;
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
@@ -73,4 +79,42 @@ class Stopwatch {
   }
 
 const stopwatch = new Stopwatch("stopwatch");
+class StopwatchUIController {
+    constructor(stopwatchService){
+        this.stopwatchService = stopwatchService;
+        this.setupUI();
+    }
 
+    setupUI() {
+        this.startButton = document.getElementById('start');
+        this.stopButton = document.getElementById('stop');
+        this.lapButton = document.getElementById('lap');
+        this.resetButton = document.getElementById('reset');
+    }
+
+    start() {
+        this.stopwatchService.start();
+        this.startButton.hidden = true;
+        this.stopButton.hidden = false;
+        this.lapButton.hidden = false;
+    }
+
+    stop() {
+        this.stopwatchService.stop();
+        this.startButton.hidden = false;
+        this.stopButton.hidden = true;
+    }
+
+    lap() {
+        this.stopwatchService.lap();
+    }
+
+    reset() {
+        this.stopwatchService.reset();
+        this.startButton.hidden = false;
+        this.stopButton.hidden = true;
+        this.lapButton.hidden = true;
+    }
+}
+
+const stopwatchUIController = new StopwatchUIController(stopwatch);
